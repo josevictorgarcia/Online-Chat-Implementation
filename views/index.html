@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="app.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    </head>
+    <body id="main">
+        <div id="textWindow" style="width: 100%; height: 512px; border-color: black; border-style: double;"></div>
+        
+        <input type="text" id="message" style="margin-top: 32px; width: 90%;">
+        <button type="submit" onclick="sendMessage('{{id}}')">Send</button>
+    </body>
+
+    <script>
+        const socket = io();
+        newConnection()
+    </script>
+
+</html>
