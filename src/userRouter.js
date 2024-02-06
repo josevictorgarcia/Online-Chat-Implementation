@@ -6,10 +6,12 @@ const socket = io("https://localhost:3000");
 
 socket.on("connection", (socket) => {
     console.log(socket.id)
+    //res.end()
 });
 
 socket.on("message", (message) => {
     console.log(message)
+    //res.end()
 })
 
 const router = express.Router()
@@ -38,6 +40,7 @@ router.get('/addUser', (req, res) => {
     let user = req.query.user
     users.addUser(user)
     console.log(users.getUsers())
+    res.end()
 })
 /*
 router.get('/addUser', (req, res) => {
