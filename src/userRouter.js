@@ -1,4 +1,5 @@
 import * as users from './users.js'
+import * as roomGen from './roomGen.js'
 import express from 'express'
 import { io } from 'socket.io-client';
 const socket = io("https://localhost:3000");
@@ -41,6 +42,10 @@ router.get('/addUser', (req, res) => {
     users.addUser(user)
     console.log(users.getUsers())
     res.end()
+})
+
+router.get('/waitconnection', (req, res) => {
+    res.send(roomGen.waiting())
 })
 /*
 router.get('/addUser', (req, res) => {

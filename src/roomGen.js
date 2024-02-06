@@ -15,3 +15,7 @@ export function newRoom(){
 export function getRoom(){
     return room
 }
+
+export function waiting(){
+    return (count == 1)
+}

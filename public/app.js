@@ -62,4 +62,15 @@ async function connect2Random(){
     //Clear text window before initiating a new chat
     const ventanaNuevoElem = document.getElementById("textWindow");
     ventanaNuevoElem.innerHTML = "";
+
+    let esperando = "true"
+    document.getElementById("buttonConnect2Random").disabled = true
+    document.getElementById("buttonSendMessage").disabled = true
+    while(esperando === "true"){
+        const response =  await fetch(`/waitconnection`);
+        esperando = await response.text()
+        console.log(esperando)
+    }
+    document.getElementById("buttonConnect2Random").disabled = false
+    document.getElementById("buttonSendMessage").disabled = false
 }
