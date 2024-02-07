@@ -5,15 +5,15 @@ import { io } from 'socket.io-client';
 const socket = io("https://localhost:3000");
 
 
-socket.on("connection", (socket) => {
+/*socket.on("connection", (socket) => {
     console.log(socket.id)
     //res.end()
-});
+});*/
 
-socket.on("message", (message) => {
+/*socket.on("message", (message) => {
     console.log(message)
     //res.end()
-})
+})*/
 
 const router = express.Router()
 

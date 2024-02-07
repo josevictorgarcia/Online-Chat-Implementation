@@ -10,6 +10,12 @@
         <input type="text" id="message" style="margin-top: 32px; width: 90%;">
         <button id="buttonSendMessage" type="submit" onclick="sendMessage('{{id}}')">Send</button>
         <button id="buttonConnect2Random" type="submit" onclick="connect2Random()" style="margin-top: 30px;">Connect to a random stranger</button>
+        <span id="messageJoinRoom"></span>
+
+        <div>
+            <input type="text" id="joinRoom" style="margin-top: 32px; width: 30%;">
+            <button id="buttonJoinRoom" type="submit" onclick="joinRoom()">Join Room</button>
+        </div>
     </body>
 
     <script>

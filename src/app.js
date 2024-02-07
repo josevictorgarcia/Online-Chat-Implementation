@@ -51,18 +51,26 @@ io.on("connection", (socket) => {
     console.log(message)
   })
 
-  socket.on("join-room", () => {
-    if(socket.room === undefined){
+  socket.on("join-random-room", () => {
+    /*if(socket.room === undefined){
       socket.room = "global"
       socket.join("global")
-    }
-    else{
+    }*/
+    //else{
       let room = roomGen.newRoom()
       socket.leave(socket.room)
       socket.room = room.toString()
       socket.join(room.toString())          //Importante, debe usarse toString porque no es lo mismo una habitacion dada por un numero entero que por un numero expresado como un string
       //console.log(room)
+    //}
+  })
+
+  socket.on("join-room", (room) => {
+    if(socket.room != undefined){
+      socket.leave(socket.room)
     }
+    socket.room = room
+    socket.join(room)
   })
 });
 
