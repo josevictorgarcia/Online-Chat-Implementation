@@ -1,5 +1,6 @@
 import * as users from './users.js'
 import * as roomGen from './roomGen.js'
+import * as interestMap from './interestMap.js'
 import express from 'express'
 import { io } from 'socket.io-client';
 const socket = io("https://localhost:3000");
@@ -45,7 +46,19 @@ router.get('/addUser', (req, res) => {
 })
 
 router.get('/waitconnection', (req, res) => {
-    res.send(roomGen.waiting())
+    let interests = req.query.interests
+    //if(interests === ""){
+    //    res.send(interestMap.waiting(0))
+        //res.send(roomGen.waiting())
+    //} else{
+        res.send(interestMap.waiting(interests))
+    //}
+})
+
+router.get('/setInterests', (req, res) => {
+    let interests = req.query.interests
+    //console.log(interestMap.waiting(interests))
+    res.send(interestMap.setInterest(interests))
 })
 /*
 router.get('/addUser', (req, res) => {

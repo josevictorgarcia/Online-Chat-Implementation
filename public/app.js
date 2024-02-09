@@ -57,27 +57,52 @@ async function sendMessage(id){
 
 async function connect2Random(){
     console.log("Joining new room...")
-    socket.emit('join-random-room')
-    
-    //Clear text window before initiating a new chat
-    const ventanaNuevoElem = document.getElementById("textWindow");
-    ventanaNuevoElem.innerHTML = "";
-
     let esperando = "true"
+
     document.getElementById("buttonConnect2Random").disabled = true
     document.getElementById("buttonSendMessage").disabled = true
     document.getElementById("buttonJoinRoom").disabled = true
 
-    const mensaje = document.getElementById("messageJoinRoom");
-    while(esperando === "true"){
-        
-        mensaje.innerHTML = "Connecting to random user...";
+    const mensaje = document.getElementById("messageJoinRoom");    
 
-        const response =  await fetch(`/waitconnection`);
+    const interests = document.getElementById("common-interests").value
+    console.log(interests)
+    //if(interests != ""){
+        await fetch(`/setInterests?interests=${interests}`)
+        let response = await fetch(`/waitconnection?interests=${interests}`)
         esperando = await response.text()
         console.log(esperando)
-        await new Promise(r => setTimeout(r, 2000));
-    }
+        while(esperando === "true"){
+            mensaje.innerHTML = "Connecting to random user with common interests...";
+            console.log("Hay intereses")
+            response = await fetch(`/waitconnection?interests=${interests}`)
+            esperando = await response.text()
+            console.log(esperando)
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    //}
+    
+    /*if(interests === ""){
+        await fetch(`/setInterests?interests=${interests}`)
+        let response = await fetch(`/waitconnection?interests=${interests}`)
+        esperando = await response.text()
+        while(esperando === "true"){
+        
+            mensaje.innerHTML = "Connecting to random user...";
+
+            response =  await fetch(`/waitconnection?interests=${interests}`);
+            esperando = await response.text()
+            console.log(esperando)
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }*/
+
+    //Clear text window before initiating a new chat
+    const ventanaNuevoElem = document.getElementById("textWindow");
+    ventanaNuevoElem.innerHTML = "";
+
+    socket.emit('join-random-room')         //Anadir interests
+
     document.getElementById("buttonConnect2Random").disabled = false
     document.getElementById("buttonSendMessage").disabled = false
     document.getElementById("buttonJoinRoom").disabled = false
