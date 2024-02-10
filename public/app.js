@@ -5,6 +5,8 @@ async function newConnection(){
         console.log('Connected to the server');
         await fetch(`/addUser?user=${socket.id}`)
         socket.emit('join-room', "global")
+        socket.interests = []                   //socket.interests se encuentran en el cliente. socket.room en el servidor (se podria cambiar)
+        //console.log(socket.interests)
     });
 
     // Listen for the "disconnect" event
@@ -66,19 +68,48 @@ async function connect2Random(){
     const mensaje = document.getElementById("messageJoinRoom");    
 
     const interests = document.getElementById("common-interests").value
-    console.log(interests)
+
+    if(!socket.interests.includes(interests)){
+        socket.interests.push(interests)
+    }
+    //console.log("Interest added to the list")
+
+    /*if(socket.interests.length > 1){   //En el caso de que tenga intereses, se le quita el interes nulo ("") y se busca algun usuario que tenga alguno de los mismos intereses
+        for (let index = 0; index < socket.interests.length; index++) {
+            if (socket.interests[index] === "") {
+                socket.interests[index] = null
+            }
+        }
+    }*/
+    if(socket.interests.length > 1){
+        socket.interests = socket.interests.filter((elem) => elem != "")
+    }
+    console.log(socket.interests)
+
+    //console.log(interests)
     //if(interests != ""){
-        await fetch(`/setInterests?interests=${interests}`)
-        let response = await fetch(`/waitconnection?interests=${interests}`)
-        esperando = await response.text()
+        let response = ""
+        for(const interest of socket.interests){
+            await fetch(`/setInterests?interests=${interest}`)
+            /*if(esperando === "true"){
+                console.log(interest)
+                response = await fetch(`/waitconnection?interests=${interests}`)
+                esperando = await response.text()
+            }*/
+        }
+        //esperando = await response.text()
         console.log(esperando)
         while(esperando === "true"){
             mensaje.innerHTML = "Connecting to random user with common interests...";
             console.log("Hay intereses")
-            response = await fetch(`/waitconnection?interests=${interests}`)
-            esperando = await response.text()
+            for(const interest of socket.interests){
+                if(esperando === "true"){
+                    response = await fetch(`/waitconnection?interests=${interest}`)
+                    esperando = await response.text()
+                }
+            }
             console.log(esperando)
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 100));
         }
     //}
     
@@ -96,6 +127,10 @@ async function connect2Random(){
             await new Promise(r => setTimeout(r, 2000));
         }
     }*/
+
+    for(const interest of socket.interests){
+        await fetch(`/deleteInterests?interests=${interest}`)
+    }
 
     //Clear text window before initiating a new chat
     const ventanaNuevoElem = document.getElementById("textWindow");
@@ -139,4 +174,28 @@ async function joinRoom(){              //Mismo código que connect2Random pero 
     document.getElementById("buttonJoinRoom").disabled = false
 
     mensaje.innerHTML = "You are now connected to room " + room;
+}
+
+async function addInterestToList(){
+    // Get the input field
+    let input = document.getElementById("common-interests");
+
+    // Execute a function when the user presses a key on the keyboard
+    input.addEventListener("keypress", function(event) {
+    // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+
+            if(!socket.interests.includes(input.value)){
+                socket.interests.push(input.value)
+            }
+            
+            socket.interests = socket.interests.filter((elem) => elem != "")
+            console.log(socket.interests)
+
+            console.log("Interest added to the list")
+
+        }
+    });
 }

@@ -12,3 +12,8 @@ export function setInterest(interest){
 export function waiting(interest){
     return interests.get(interest)
 }
+
+export function deleteInterest(interest){
+    interests.set(interest, "false")
+    console.log(interests)
+}

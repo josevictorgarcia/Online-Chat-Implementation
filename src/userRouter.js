@@ -60,6 +60,12 @@ router.get('/setInterests', (req, res) => {
     //console.log(interestMap.waiting(interests))
     res.send(interestMap.setInterest(interests))
 })
+
+router.get('/deleteInterests', (req, res) => {
+    let interests = req.query.interests
+    interestMap.deleteInterest(interests)
+    res.end()
+})
 /*
 router.get('/addUser', (req, res) => {
     let name = req.query.nombre;
