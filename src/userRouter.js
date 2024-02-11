@@ -66,6 +66,11 @@ router.get('/deleteInterests', (req, res) => {
     interestMap.deleteInterest(interests)
     res.end()
 })
+
+/*router.get('/getCommonInterests', (req, res) => {
+    let interests = req.query.interests
+    res.send(interestMap.getCommonInterests(interests))
+})*/
 /*
 router.get('/addUser', (req, res) => {
     let name = req.query.nombre;

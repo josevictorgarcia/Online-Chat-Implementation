@@ -10,6 +10,9 @@ export function setInterest(interest){
 }
 
 export function waiting(interest){
+    /*if(interests.get(interest) != "true"){
+        interests.set(interest, "common")
+    }*/
     return interests.get(interest)
 }
 
@@ -17,3 +20,10 @@ export function deleteInterest(interest){
     interests.set(interest, "false")
     console.log(interests)
 }
+
+/*export function getCommonInterests(interest){
+    if(interests.get(interest) === "common"){
+        return interests.get(interest)
+    }
+    return ""
+}*/

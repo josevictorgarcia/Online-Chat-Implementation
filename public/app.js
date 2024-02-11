@@ -128,6 +128,29 @@ async function connect2Random(){
         }
     }*/
 
+    socket.emit('join-random-room')         //Anadir interests
+
+    let commonInterests = []
+    ////////////////////////
+    /*
+    for(const interest of socket.interests){
+        response = await fetch(`/getCommonInterests?interests=${interest}`)
+        let newInterest = await response.text()
+        commonInterests.push(newInterest)
+    }*/
+
+    socket.emit('exchange-interests', socket.interests)
+    socket.on('receive-interests', (common_interests) => {
+        commonInterests = common_interests
+        //socket.emit('exchange-interests', socket.interests)
+    });
+    await new Promise(r => setTimeout(r, 5000));            //Es necesario poner un tiempo de espera para que el servidor pueda ser usado por el segundo socket
+    socket.emit('exchange-interests', socket.interests)
+    //socket.emit('exchange-interests', socket.interests)
+    //socket.interests = socket.interests.filter((elem) => elem != "")
+    commonInterests = commonInterests.filter((elem) => socket.interests.includes(elem))
+    console.log(commonInterests)
+
     for(const interest of socket.interests){
         await fetch(`/deleteInterests?interests=${interest}`)
     }
@@ -136,13 +159,17 @@ async function connect2Random(){
     const ventanaNuevoElem = document.getElementById("textWindow");
     ventanaNuevoElem.innerHTML = "";
 
-    socket.emit('join-random-room')         //Anadir interests
-
     document.getElementById("buttonConnect2Random").disabled = false
     document.getElementById("buttonSendMessage").disabled = false
     document.getElementById("buttonJoinRoom").disabled = false
 
-    mensaje.innerHTML = "You are now connected to a random user"
+    if(commonInterests.includes("")){
+        mensaje.innerHTML = "You are now connected to a random user"
+    } else {
+        stringToPrint = ""
+        commonInterests.forEach(elem => stringToPrint += elem + " ")
+        mensaje.innerHTML = "You both like " + stringToPrint
+    }
 }
 
 async function joinRoom(){              //Mismo código que connect2Random pero con algún cambio

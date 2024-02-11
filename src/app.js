@@ -72,6 +72,10 @@ io.on("connection", (socket) => {
     socket.room = room
     socket.join(room)
   })
+
+  socket.on("exchange-interests", (interests) => {
+    socket.to(socket.room).emit("receive-interests", interests)
+  })
 });
 
 httpServer.listen(3000, () => console.log('Listening on port 3000!'));
