@@ -57,13 +57,40 @@ async function sendMessage(id){
     })*/
 }
 
+async function connectRandomStranger(id){
+    // Conseguir la pagina html e imprimirla por pantalla mientras se conecta
+    const paginaPrincipal = await fetch(`/get2RandomPage?id=${id}`);
+    const nuevoHtml = await paginaPrincipal.text();
+
+    const ventanaACambiar = document.getElementById("main");
+    ventanaACambiar.innerHTML = nuevoHtml
+    // Fin conseguir e imprimir la pagina html
+
+    await connect2Random()
+}
+
+async function connectToRooms(id){
+    // Conseguir la pagina html e imprimirla por pantalla mientras se conecta
+    const paginaPrincipal = await fetch(`/getRoomPage?id=${id}`);
+    const nuevoHtml = await paginaPrincipal.text();
+
+    const ventanaACambiar = document.getElementById("main");
+    ventanaACambiar.innerHTML = nuevoHtml
+    // Fin conseguir e imprimir la pagina html
+
+    await joinRoom()
+}
+
 async function connect2Random(){
+
     console.log("Joining new room...")
     let esperando = "true"
 
-    document.getElementById("buttonConnect2Random").disabled = true
+    //document.getElementById("buttonConnect2Random").disabled = true
     document.getElementById("buttonSendMessage").disabled = true
-    document.getElementById("buttonJoinRoom").disabled = true
+    document.getElementById("buttonSkip").disabled = true
+    document.getElementById("common-interests").disabled = true
+    //document.getElementById("buttonJoinRoom").disabled = true
 
     const mensaje = document.getElementById("messageJoinRoom");    
 
@@ -111,6 +138,10 @@ async function connect2Random(){
             console.log(esperando)
             await new Promise(r => setTimeout(r, 100));
         }
+
+        //for(const interest of socket.interests){
+        //    await fetch(`/deleteInterests?interests=${interest}`)
+        //}
     //}
     
     /*if(interests === ""){
@@ -151,17 +182,24 @@ async function connect2Random(){
     commonInterests = commonInterests.filter((elem) => socket.interests.includes(elem))
     console.log(commonInterests)
 
-    for(const interest of socket.interests){
-        await fetch(`/deleteInterests?interests=${interest}`)
-    }
-
     //Clear text window before initiating a new chat
     const ventanaNuevoElem = document.getElementById("textWindow");
     ventanaNuevoElem.innerHTML = "";
 
-    document.getElementById("buttonConnect2Random").disabled = false
+    //document.getElementById("buttonConnect2Random").disabled = false                          //No quitar
     document.getElementById("buttonSendMessage").disabled = false
-    document.getElementById("buttonJoinRoom").disabled = false
+    document.getElementById("buttonSkip").disabled = false
+    document.getElementById("common-interests").disabled = false
+    //document.getElementById("buttonJoinRoom").disabled = false                                //No quitar
+
+    if(socket.interests[0] != "" && commonInterests.length === 0){  //Si entramos aqui es que ha ocurrido un error y se ha salido del while sin haber encontrado otro socket con intereses comunes
+        socket.emit('join-random-room')                             //Sumamos +1 a las random rooms para compensar que ya habiamos entrado en una
+        for(const interest of socket.interests){
+            await fetch(`/deleteInterests?interests=${interest}`)   //Reseteamos todos los intereses a false en el mapa
+        }
+        await connect2Random()
+        return 0;
+    }
 
     if(commonInterests.includes("")){
         mensaje.innerHTML = "You are now connected to a random user"
@@ -176,13 +214,16 @@ async function joinRoom(){              //Mismo código que connect2Random pero 
     let room = document.getElementById("joinRoom").value
     document.getElementById("joinRoom").value = "";
 
+    if(room == ""){
+        room = "global"
+    }
     socket.emit('join-room', room)
     
     const ventanaNuevoElem = document.getElementById("textWindow");
     ventanaNuevoElem.innerHTML = "";
 
     let esperando = "true"
-    document.getElementById("buttonConnect2Random").disabled = true
+    //document.getElementById("buttonConnect2Random").disabled = true
     document.getElementById("buttonSendMessage").disabled = true
     document.getElementById("buttonJoinRoom").disabled = true
 
@@ -196,15 +237,15 @@ async function joinRoom(){              //Mismo código que connect2Random pero 
         console.log(esperando)
         await new Promise(r => setTimeout(r, 2000));                //Tiempo de espera de 2s antes de iniciar una nueva iteracion
     }
-    document.getElementById("buttonConnect2Random").disabled = false
+    //document.getElementById("buttonConnect2Random").disabled = false
     document.getElementById("buttonSendMessage").disabled = false
     document.getElementById("buttonJoinRoom").disabled = false
 
     mensaje.innerHTML = "You are now connected to room " + room;
 }
 
-async function addInterestToList(){
-    // Get the input field
+async function addInterestToList(event){
+/*    // Get the input field
     let input = document.getElementById("common-interests");
 
     // Execute a function when the user presses a key on the keyboard
@@ -224,5 +265,17 @@ async function addInterestToList(){
             console.log("Interest added to the list")
 
         }
-    });
+    });*/
+    let input = document.getElementById("common-interests");
+
+    if(event.key === "Enter"){
+        if(!socket.interests.includes(input.value)){
+            socket.interests.push(input.value)
+        }
+        
+        socket.interests = socket.interests.filter((elem) => elem != "")
+        console.log(socket.interests)
+
+        console.log("Interest added to the list")
+    }
 }

@@ -67,6 +67,18 @@ router.get('/deleteInterests', (req, res) => {
     res.end()
 })
 
+router.get('/get2RandomPage', (req, res) => {
+    res.render('2random', {
+        id: req.query.id
+    })
+})
+
+router.get('/getRoomPage', (req, res) => {
+    res.render('room', {
+        id: req.query.id
+    })
+})
+
 /*router.get('/getCommonInterests', (req, res) => {
     let interests = req.query.interests
     res.send(interestMap.getCommonInterests(interests))
