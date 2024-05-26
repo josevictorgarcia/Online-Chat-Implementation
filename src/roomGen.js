@@ -12,6 +12,11 @@ export function newRoom(){
     return room
 }
 
+export function increaseRoom(){
+    count = 0
+    room ++
+}
+
 export function getRoom(){
     return room
 }

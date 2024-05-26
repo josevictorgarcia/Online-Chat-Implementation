@@ -65,6 +65,10 @@ io.on("connection", (socket) => {
     //}
   })
 
+  socket.on("increase-room", () => {
+    roomGen.increaseRoom()
+  })
+
   socket.on("join-room", (room) => {
     if(socket.room != undefined){
       socket.leave(socket.room)

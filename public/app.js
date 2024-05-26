@@ -10,8 +10,12 @@ async function newConnection(){
     });
 
     // Listen for the "disconnect" event
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         console.log('Disconnected from the server');
+        /*for(const interest of socket.interests){
+            await fetch(`/deleteInterests?interests=${interest}`)
+        }
+        socket.emit('join-random-room')*/
     });
 
     /*socket.on('post-message', async (message, id) => {
@@ -216,7 +220,7 @@ async function connect2Random(){
     }*/
 
     if (commonInterests.length == 0){
-        socket.emit('join-random-room')     //join-random-room. Replantear esto. Se produce un fallo en cadena que afecta a todos los clientes
+        socket.emit('increase-room')        //join-random-room. Replantear esto. Se produce un fallo en cadena que afecta a todos los clientes
         //await connect2Random()            //Llamar recursivamente es una movida heavy. No hacerlo.
         mensaje.innerHTML = "Could not find a match :(" //Lanzar excepcion??
     }
