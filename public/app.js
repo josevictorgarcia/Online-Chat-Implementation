@@ -59,6 +59,17 @@ async function sendMessage(id){
 
 async function connectRandomStranger(id){
     // Conseguir la pagina html e imprimirla por pantalla mientras se conecta
+
+    const interests = document.getElementById("common-interests")
+    console.log(socket.interests)
+    if(interests == null && !socket.interests.some((elem) => elem === "")){
+        console.log(socket.interests)
+        socket.interests.push("")}
+    else if(interests != null && socket.interests.indexOf(interests)==-1){
+        socket.interests = socket.interests.filter((elem) => elem != interests.value)
+        socket.interests.push(interests.value)
+    }
+
     const paginaPrincipal = await fetch(`/get2RandomPage?id=${id}`);
     const nuevoHtml = await paginaPrincipal.text();
 
@@ -66,7 +77,15 @@ async function connectRandomStranger(id){
     ventanaACambiar.innerHTML = nuevoHtml
     // Fin conseguir e imprimir la pagina html
 
+    document.getElementById("buttonSendMessage").disabled = true
+    document.getElementById("buttonSkip").disabled = true
+    document.getElementById("common-interests").disabled = true
+
     await connect2Random()
+
+    document.getElementById("buttonSendMessage").disabled = false
+    document.getElementById("buttonSkip").disabled = false
+    document.getElementById("common-interests").disabled = false
 }
 
 async function connectToRooms(id){
@@ -79,26 +98,21 @@ async function connectToRooms(id){
     // Fin conseguir e imprimir la pagina html
 
     await joinRoom()
+
 }
 
 async function connect2Random(){
 
+    console.log(socket.interests)
     console.log("Joining new room...")
     let esperando = "true"
 
-    //document.getElementById("buttonConnect2Random").disabled = true
-    document.getElementById("buttonSendMessage").disabled = true
-    document.getElementById("buttonSkip").disabled = true
-    document.getElementById("common-interests").disabled = true
-    //document.getElementById("buttonJoinRoom").disabled = true
-
     const mensaje = document.getElementById("messageJoinRoom");    
 
-    const interests = document.getElementById("common-interests").value
+    //document.getElementById("buttonConnect2Random").disabled = true
+    
+    //document.getElementById("buttonJoinRoom").disabled = true
 
-    if(!socket.interests.includes(interests)){
-        socket.interests.push(interests)
-    }
     //console.log("Interest added to the list")
 
     /*if(socket.interests.length > 1){   //En el caso de que tenga intereses, se le quita el interes nulo ("") y se busca algun usuario que tenga alguno de los mismos intereses
@@ -108,16 +122,19 @@ async function connect2Random(){
             }
         }
     }*/
-    if(socket.interests.length > 1){
-        socket.interests = socket.interests.filter((elem) => elem != "")
-    }
+    //if(socket.interests.length > 0){
+    socket.interests = socket.interests.filter((elem) => elem != "")
+    if (socket.interests.length == 0) {socket.interests.push("")}
+    
+    //}
+
     console.log(socket.interests)
 
     //console.log(interests)
     //if(interests != ""){
         let response = ""
         for(const interest of socket.interests){
-            await fetch(`/setInterests?interests=${interest}`)
+            await fetch(`/setInterests?interests=${interest}`)        //Semaforo??
             /*if(esperando === "true"){
                 console.log(interest)
                 response = await fetch(`/waitconnection?interests=${interests}`)
@@ -125,9 +142,9 @@ async function connect2Random(){
             }*/
         }
         //esperando = await response.text()
-        console.log(esperando)
+        //console.log(esperando)
+        mensaje.innerHTML = "Connecting to random user with common interests...";
         while(esperando === "true"){
-            mensaje.innerHTML = "Connecting to random user with common interests...";
             console.log("Hay intereses")
             for(const interest of socket.interests){
                 if(esperando === "true"){
@@ -139,9 +156,9 @@ async function connect2Random(){
             await new Promise(r => setTimeout(r, 100));
         }
 
-        //for(const interest of socket.interests){
-        //    await fetch(`/deleteInterests?interests=${interest}`)
-        //}
+        for(const interest of socket.interests){
+            await fetch(`/deleteInterests?interests=${interest}`)
+        }
     //}
     
     /*if(interests === ""){
@@ -175,7 +192,7 @@ async function connect2Random(){
         commonInterests = common_interests
         //socket.emit('exchange-interests', socket.interests)
     });
-    await new Promise(r => setTimeout(r, 5000));            //Es necesario poner un tiempo de espera para que el servidor pueda ser usado por el segundo socket
+    await new Promise(r => setTimeout(r, 2000));            //Es necesario poner un tiempo de espera para que el servidor pueda ser usado por el segundo socket
     socket.emit('exchange-interests', socket.interests)
     //socket.emit('exchange-interests', socket.interests)
     //socket.interests = socket.interests.filter((elem) => elem != "")
@@ -187,21 +204,23 @@ async function connect2Random(){
     ventanaNuevoElem.innerHTML = "";
 
     //document.getElementById("buttonConnect2Random").disabled = false                          //No quitar
-    document.getElementById("buttonSendMessage").disabled = false
-    document.getElementById("buttonSkip").disabled = false
-    document.getElementById("common-interests").disabled = false
     //document.getElementById("buttonJoinRoom").disabled = false                                //No quitar
 
-    if(socket.interests[0] != "" && commonInterests.length === 0){  //Si entramos aqui es que ha ocurrido un error y se ha salido del while sin haber encontrado otro socket con intereses comunes
+    /*if(socket.interests[0] != "" && commonInterests.length === 0){  //Si entramos aqui es que ha ocurrido un error y se ha salido del while sin haber encontrado otro socket con intereses comunes
         socket.emit('join-random-room')                             //Sumamos +1 a las random rooms para compensar que ya habiamos entrado en una
         for(const interest of socket.interests){
             await fetch(`/deleteInterests?interests=${interest}`)   //Reseteamos todos los intereses a false en el mapa
         }
         await connect2Random()
         return 0;
-    }
+    }*/
 
-    if(commonInterests.includes("")){
+    if (commonInterests.length == 0){
+        socket.emit('join-random-room')     //join-random-room. Replantear esto. Se produce un fallo en cadena que afecta a todos los clientes
+        //await connect2Random()            //Llamar recursivamente es una movida heavy. No hacerlo.
+        mensaje.innerHTML = "Could not find a match :(" //Lanzar excepcion??
+    }
+    else if(commonInterests.some((elem) => elem === "")){
         mensaje.innerHTML = "You are now connected to a random user"
     } else {
         stringToPrint = ""
