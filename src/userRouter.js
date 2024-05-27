@@ -1,6 +1,7 @@
 import * as users from './users.js'
 import * as roomGen from './roomGen.js'
 import * as interestMap from './interestMap.js'
+import * as loggedUsersGraph from './LoggedUsersGraph.js'
 import express from 'express'
 import { io } from 'socket.io-client';
 const socket = io("https://localhost:3000");
@@ -108,5 +109,15 @@ router.get('/addUser', (req, res) => {
         })
     }
 })*/
+
+router.get('/getLoginPage', (req, res) => {
+    res.render('login.html', {
+
+    })
+})
+
+router.get('/addUserGraph', (req, res) => {
+    res.send(loggedUsersGraph.addUser(req.query.usuario, req.query.contrasena))
+})
 
 export default router

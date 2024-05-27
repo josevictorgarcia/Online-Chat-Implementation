@@ -302,3 +302,20 @@ async function addInterestToList(event){
         console.log("Interest added to the list")
     }
 }
+
+async function getLoginPage(){
+    const paginaPrincipal = await fetch(`/getLoginPage`);
+    const nuevoHtml = await paginaPrincipal.text();
+
+    const ventanaACambiar = document.getElementById("main");
+    ventanaACambiar.innerHTML = nuevoHtml
+}
+
+async function login(){
+    usuario = document.getElementById("usuario").value
+    contrasena = document.getElementById("contrasena").value
+    
+    const response = await fetch(`/addUserGraph?usuario=${usuario}&contrasena=${contrasena}`)
+    const existe = await response.text()
+    console.log(existe)
+}
