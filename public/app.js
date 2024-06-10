@@ -303,8 +303,9 @@ async function addInterestToList(event){
     }
 }
 
-async function getLoginPage(){
-    const paginaPrincipal = await fetch(`/getLoginPage`);
+async function getLoginPage(option){
+    //console.log(option)
+    const paginaPrincipal = await fetch(`/getLoginPage?option=${option}`);
     const nuevoHtml = await paginaPrincipal.text();
 
     const ventanaACambiar = document.getElementById("main");
@@ -315,7 +316,40 @@ async function login(){
     usuario = document.getElementById("usuario").value
     contrasena = document.getElementById("contrasena").value
     
-    const response = await fetch(`/addUserGraph?usuario=${usuario}&contrasena=${contrasena}`)
+    //const response = await fetch(`/addUserGraph?usuario=${usuario}&contrasena=${contrasena}`)
+    const response = await fetch(`/login?usuario=${usuario}&contrasena=${contrasena}`)
     const existe = await response.text()
     console.log(existe)
+    if (existe === "true") {
+        document.getElementById("message").innerHTML = "Access granted"
+        
+        const paginaUsuario = await fetch(`/getUsuario?usuario=${usuario}`)
+        const nuevoHtml = await paginaUsuario.text()
+
+        const ventanaACambiar = document.getElementById("main")
+        ventanaACambiar.innerHTML = nuevoHtml
+    }
+    else {
+        document.getElementById("message").innerHTML = "Incorrect username or password"
+    }
+    /*else if (existe === "false"){
+        document.getElementById("message").innerHTML = "Incorrect username or password"
+    }*/
+    /*else{
+        document.getElementById("message").innerHTML = "Your account doesn't exist. We created a new one with the username and password that you provided. Now you can access"
+    }*/
+}
+
+async function signUp(){
+    usuario = document.getElementById("usuario").value
+    contrasena = document.getElementById("contrasena").value
+
+    const response = await fetch(`/register?usuario=${usuario}&contrasena=${contrasena}`)
+    const existe = await response.text()
+    if (existe === "set") {
+        document.getElementById("message").innerHTML = "Registration completed successfully. Now you can login."
+    }
+    else {
+        document.getElementById("message").innerHTML = "User already registered"
+    }
 }

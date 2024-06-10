@@ -111,13 +111,36 @@ router.get('/addUser', (req, res) => {
 })*/
 
 router.get('/getLoginPage', (req, res) => {
+    let opcion = req.query.option
+    let optionText = "Login"
+    let option = "login()"
+    if (opcion == "signUp"){
+        optionText = "Sign Up"
+        option = "signUp()"
+    }
     res.render('login.html', {
-
+        option: option,
+        optionText: optionText
     })
 })
 
-router.get('/addUserGraph', (req, res) => {
+router.get('/register', (req, res) => {
     res.send(loggedUsersGraph.addUser(req.query.usuario, req.query.contrasena))
+})
+
+router.get('/login', (req, res) => {
+    res.send(loggedUsersGraph.access(req.query.usuario, req.query.contrasena))
+})
+
+router.get('/getUsuario', (req, res) => {
+    let usuario = req.query.usuario
+    //loggedUsersGraph.addAdjacentUser(usuario, "antonio")
+    //loggedUsersGraph.addAdjacentUser(usuario, "maria")
+    //loggedUsersGraph.addAdjacentUser(usuario, "cabron")
+    res.render('profile.html', {
+        username: usuario,
+        contactos: loggedUsersGraph.getUser(usuario)
+    })
 })
 
 export default router

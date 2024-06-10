@@ -13,8 +13,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Micro+5&display=swap" rel="stylesheet">
     </head>
     <body id="main" style="background-color: rgb(255, 230, 203);">
-        <div class="container" style="background-color: rgb(38, 49, 49, 0.7); margin-top: 90px; text-align: center; color: rgb(255, 255, 255);">
-            <div>LOGIN</div>
+        <div class="container" style="background-color: rgb(38, 49, 49, 0.7); margin-top: 90px; text-align: center; color: rgb(255, 255, 255); padding-bottom: 30px;">
+            <div>{{optionText}}</div>
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-2" style="display:flex; align-self: center; justify-content: center;">
                 <input style="width: 40%; margin-top: 30px;" type="text" id="usuario" class="form-control" placeholder="Usuario">
             </div>
@@ -22,8 +22,9 @@
                 <input style="width: 40%; margin-top: 30px;" type="text" id="contrasena" class="form-control" placeholder="Contrasena">
             </div>
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-2" style="display:flex; align-self: center; justify-content: center;">
-                <button style="width: 40%; margin-top: 30px;" type="button" class="btn btn-primary" onclick="login()">Login</button>
+                <button style="width: 40%; margin-top: 30px;" type="button" class="btn btn-primary" onclick="{{option}}">{{optionText}}</button>
             </div>
+            <div style="margin-top: 30px;" id="message"></div>
         </div>
     </body>
 </html>
