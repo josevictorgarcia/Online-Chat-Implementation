@@ -234,11 +234,9 @@ async function connect2Random(){
 }
 
 async function joinRoom(){              //Mismo código que connect2Random pero con algún cambio
-    let room = ""
-    if(document.getElementById("joinRoom")!=null){
-        room = document.getElementById("joinRoom").value
-        document.getElementById("joinRoom").value = "";
-    }
+
+    let room = document.getElementById("joinRoom").value
+    document.getElementById("joinRoom").value = "";
 
     if(room == ""){
         room = "global"
@@ -252,18 +250,12 @@ async function joinRoom(){              //Mismo código que connect2Random pero 
     //document.getElementById("buttonConnect2Random").disabled = true
 
     document.getElementById("buttonSendMessage").disabled = true
-    if(document.getElementById("buttonJoinRoom")!=null){
-        document.getElementById("buttonJoinRoom").disabled = true
-    }
+    document.getElementById("buttonJoinRoom").disabled = true
 
-    let mensaje = null
-    if(document.getElementById("messageJoinRoom")!=undefined){
-        mensaje = document.getElementById("messageJoinRoom");
-    }
+    const mensaje = document.getElementById("messageJoinRoom");
+
     while(esperando === "true"){
-        if(document.getElementById("messageJoinRoom")!=undefined){
-            mensaje.innerHTML = "Connecting to room " + room;
-        }
+        mensaje.innerHTML = "Connecting to room " + room;
 
         const response =  await fetch(`/waitconnection`);
         esperando = await response.text()
@@ -272,13 +264,9 @@ async function joinRoom(){              //Mismo código que connect2Random pero 
     }
     //document.getElementById("buttonConnect2Random").disabled = false
     document.getElementById("buttonSendMessage").disabled = false
-    if(document.getElementById("buttonJoinRoom")!=null){
-        document.getElementById("buttonJoinRoom").disabled = false
-    }
+    document.getElementById("buttonJoinRoom").disabled = false
 
-    if(document.getElementById("messageJoinRoom")!=undefined){
-        mensaje.innerHTML = "You are now connected to room " + room;
-    }
+    mensaje.innerHTML = "You are now connected to room " + room;
 }
 
 async function addInterestToList(event){
@@ -386,7 +374,7 @@ async function connectToChat(contact){
     ventanaACambiar.innerHTML = nuevoHtml
     // Fin conseguir e imprimir la pagina html
 
-    await joinRoom()
+    //await joinRoom()
 }
 
 async function chatWith(username, contact){
@@ -429,7 +417,7 @@ async function chatWith(username, contact){
         const response =  await fetch(`/waitconnection`);
         esperando = await response.text()
         console.log(esperando)
-        await new Promise(r => setTimeout(r, 2000));                //Tiempo de espera de 2s antes de iniciar una nueva iteracion
+        //await new Promise(r => setTimeout(r, 100));                //Tiempo de espera de 2s antes de iniciar una nueva iteracion
     }
     //document.getElementById("buttonConnect2Random").disabled = false
     document.getElementById("buttonSendMessage").disabled = false
