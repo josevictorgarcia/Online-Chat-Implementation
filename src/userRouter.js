@@ -143,4 +143,25 @@ router.get('/getUsuario', (req, res) => {
     })
 })
 
+router.get('/addContact', (req, res) => {
+    let usuario = req.query.usuario
+    let contact = req.query.contact
+    let added = loggedUsersGraph.addAdjacentUser(usuario, contact)
+    let message = "User couldn't be added"
+    if (added === "true"){
+        message = "User added to your contacts"
+    }
+    res.render('profile.html', {
+        username: usuario,
+        contactos: loggedUsersGraph.getUser(usuario),
+        message: message
+    })
+})
+
+router.get('/getChatPage', (req, res) => {
+    res.render('chat.html', {
+        contact: req.query.contact
+    })
+})
+
 export default router

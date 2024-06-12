@@ -234,8 +234,11 @@ async function connect2Random(){
 }
 
 async function joinRoom(){              //Mismo código que connect2Random pero con algún cambio
-    let room = document.getElementById("joinRoom").value
-    document.getElementById("joinRoom").value = "";
+    let room = ""
+    if(document.getElementById("joinRoom")!=null){
+        room = document.getElementById("joinRoom").value
+        document.getElementById("joinRoom").value = "";
+    }
 
     if(room == ""){
         room = "global"
@@ -247,13 +250,20 @@ async function joinRoom(){              //Mismo código que connect2Random pero 
 
     let esperando = "true"
     //document.getElementById("buttonConnect2Random").disabled = true
+
     document.getElementById("buttonSendMessage").disabled = true
-    document.getElementById("buttonJoinRoom").disabled = true
+    if(document.getElementById("buttonJoinRoom")!=null){
+        document.getElementById("buttonJoinRoom").disabled = true
+    }
 
-    const mensaje = document.getElementById("messageJoinRoom");
+    let mensaje = null
+    if(document.getElementById("messageJoinRoom")!=undefined){
+        mensaje = document.getElementById("messageJoinRoom");
+    }
     while(esperando === "true"){
-
-        mensaje.innerHTML = "Connecting to room " + room;
+        if(document.getElementById("messageJoinRoom")!=undefined){
+            mensaje.innerHTML = "Connecting to room " + room;
+        }
 
         const response =  await fetch(`/waitconnection`);
         esperando = await response.text()
@@ -262,9 +272,13 @@ async function joinRoom(){              //Mismo código que connect2Random pero 
     }
     //document.getElementById("buttonConnect2Random").disabled = false
     document.getElementById("buttonSendMessage").disabled = false
-    document.getElementById("buttonJoinRoom").disabled = false
+    if(document.getElementById("buttonJoinRoom")!=null){
+        document.getElementById("buttonJoinRoom").disabled = false
+    }
 
-    mensaje.innerHTML = "You are now connected to room " + room;
+    if(document.getElementById("messageJoinRoom")!=undefined){
+        mensaje.innerHTML = "You are now connected to room " + room;
+    }
 }
 
 async function addInterestToList(event){
@@ -352,4 +366,80 @@ async function signUp(){
     else {
         document.getElementById("message").innerHTML = "User already registered"
     }
+}
+
+async function addContact(username){
+    contact = document.getElementById("contactToAdd").value
+    //console.log(contact)
+    const response = await fetch(`/addContact?usuario=${username}&contact=${contact}`)
+    const newHtml = await response.text()
+
+    const ventanaACambiar = document.getElementById("main")
+    ventanaACambiar.innerHTML = newHtml
+}
+
+async function connectToChat(contact){
+    const paginaPrincipal = await fetch(`/getChatPage?contact=${contact}`);
+    const nuevoHtml = await paginaPrincipal.text();
+
+    const ventanaACambiar = document.getElementById("main");
+    ventanaACambiar.innerHTML = nuevoHtml
+    // Fin conseguir e imprimir la pagina html
+
+    await joinRoom()
+}
+
+async function chatWith(username, contact){
+    await connectToChat(contact)
+    console.log(username)
+    console.log(contact)
+    let room = ""
+    if(username<contact){
+        room = username.concat(contact)
+    } else{
+        room = contact.concat(username)
+    }
+    room = room.concat("ay&27ffcGYiY")
+    room = "3B9g3D8V".concat(room)
+
+    /*Esto es un copia y pega de joinRoom()*/
+
+    socket.emit('join-room', room)
+    
+    const ventanaNuevoElem = document.getElementById("textWindow");
+    ventanaNuevoElem.innerHTML = "";
+
+    let esperando = "true"
+    //document.getElementById("buttonConnect2Random").disabled = true
+
+    document.getElementById("buttonSendMessage").disabled = true
+    if(document.getElementById("buttonJoinRoom")!=null){
+        document.getElementById("buttonJoinRoom").disabled = true
+    }
+
+    let mensaje = null
+    if(document.getElementById("messageJoinRoom")!=undefined){
+        mensaje = document.getElementById("messageJoinRoom");
+    }
+    while(esperando === "true"){
+        if(document.getElementById("messageJoinRoom")!=undefined){
+            mensaje.innerHTML = "Connecting to room " + room;
+        }
+
+        const response =  await fetch(`/waitconnection`);
+        esperando = await response.text()
+        console.log(esperando)
+        await new Promise(r => setTimeout(r, 2000));                //Tiempo de espera de 2s antes de iniciar una nueva iteracion
+    }
+    //document.getElementById("buttonConnect2Random").disabled = false
+    document.getElementById("buttonSendMessage").disabled = false
+    if(document.getElementById("buttonJoinRoom")!=null){
+        document.getElementById("buttonJoinRoom").disabled = false
+    }
+
+    if(document.getElementById("messageJoinRoom")!=undefined){
+        mensaje.innerHTML = "You are now connected to room " + room;
+    }
+
+    /*Fin del copia y pega*/
 }

@@ -6,6 +6,10 @@ function notBelongs(user, graph){
     return !graph.has(user)
 }
 
+function belongs(user){
+    return graph.has(user)
+}
+
 export function access(user, contrasena){
     //console.log(graph)
     return graph.has(user) && Passwords.equals(contrasena, Passwords.getPassword(user))
@@ -27,9 +31,11 @@ export function addUser(usuario, contrasena){
 }
 
 export function addAdjacentUser(usuario, adjacent){
-    if (graph.get(usuario).indexOf(adjacent)==-1){
+    if (graph.get(usuario).indexOf(adjacent)==-1 && graph.has(adjacent) && usuario !== adjacent){
         graph.get(usuario).push(adjacent)
+        return "true"
     }
+    return "false"
 }
 
 export function getUser(usuario){

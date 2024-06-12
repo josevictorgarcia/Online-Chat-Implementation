@@ -18,9 +18,15 @@
             <div class="col-md-4">
                 <h6  style="font-size: xx-large;">Your contacts</h6>
                 {{#contactos}}
-                <div style="margin-top: 20px;">{{.}}</div>
+                <div style="margin-top: 20px;" onclick="chatWith('{{username}}','{{.}}')">{{.}}</div>
                 {{/contactos}}
-                <button class="btn btn-primary" style="margin-top: 30px; display: block; width: 100%;">Add contact</button>
+                <div style="text-align: center;">
+                    <input style="width: 40%; margin-top: 30px; display: block; width: 100%;" type="text" id="contactToAdd" class="form-control" placeholder="Add username">
+                    <button class="btn btn-primary" style="margin-top: 10px; display: block; width: 100%;" onclick="addContact('{{username}}')">Add contact</button>
+                </div>
+                <div id="message">
+                    {{message}}
+                </div>
             </div>
         </div>
     </body>
