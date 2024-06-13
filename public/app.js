@@ -431,3 +431,50 @@ async function chatWith(username, contact){
 
     /*Fin del copia y pega*/
 }
+
+async function alterAInimbus(){
+    const paginaPrincipal = await fetch(`/getAlterAInimbusPage`);
+    const nuevoHtml = await paginaPrincipal.text();
+
+    const ventanaACambiar = document.getElementById("main");
+    ventanaACambiar.innerHTML = nuevoHtml
+}
+
+function addMessage(sender, text){
+    const $template = document.querySelector('template')
+    const clonedTemplate = $template.content.cloneNode(true)
+    const $newMessage = clonedTemplate.querySelector('.message')
+
+    const $sender = $newMessage.querySelector('span')
+    const $text = $newMessage.querySelector('p')
+
+    $text.textContent = text
+    $sender.textContent = sender == 'bot' ? 'AlterAI' : 'Tú'
+    $newMessage.classList.add(sender)
+
+    const $messages = document.querySelector('ul')
+    $messages.appendChild($newMessage)
+
+    const $container = document.querySelector('main')
+    $container.scrollTop = $container.scrollHeight          //Para hacer scroll en cuanto se escribe un mensaje
+}
+
+async function askAI(){
+
+    console.log("asking ai")
+
+    const $button = document.querySelector('button')
+    const $input = document.querySelector('input')
+    input = $input.value
+    $input.value = ""
+
+    //Escribimos el mensaje del usuario
+    addMessage('user', input)
+    $button.setAttribute('disabled', "")
+
+    setTimeout(() => {
+        addMessage('bot', 'Hola, cómo estás?')
+        $button.removeAttribute('disabled')
+    }, 2000)
+
+}

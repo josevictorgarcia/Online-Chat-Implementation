@@ -164,4 +164,10 @@ router.get('/getChatPage', (req, res) => {
     })
 })
 
+router.get('/getAlterAInimbusPage', (req, res) => {
+    res.render('alterAI.html', {
+
+    })
+})
+
 export default router
