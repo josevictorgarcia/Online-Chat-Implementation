@@ -459,7 +459,16 @@ function addMessage(sender, text){
     $container.scrollTop = $container.scrollHeight          //Para hacer scroll en cuanto se escribe un mensaje
 }
 
-async function askAI(){
+let engine = null
+let messages = []
+
+async function askAI(param){
+    //console.log(param)
+    if(param!=undefined){
+        engine = param
+        return
+    }
+    //console.log(engine)
 
     console.log("asking ai")
 
@@ -472,9 +481,22 @@ async function askAI(){
     addMessage('user', input)
     $button.setAttribute('disabled', "")
 
-    setTimeout(() => {
+    /*setTimeout(() => {
         addMessage('bot', 'Hola, cómo estás?')
         $button.removeAttribute('disabled')
-    }, 2000)
+    }, 2000)*/
+    //console.log(engine)
 
+    const reply = await engine.chat.completions.create({
+        messages: [
+            ...messages,
+            {
+                role:'user',
+                content: input
+            }
+        ]
+    })
+
+    addMessage('bot', reply.choices[0].message.content)
+    $button.removeAttribute('disabled')
 }
