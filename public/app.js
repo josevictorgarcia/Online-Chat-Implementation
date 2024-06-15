@@ -457,6 +457,8 @@ function addMessage(sender, text){
 
     const $container = document.querySelector('main')
     $container.scrollTop = $container.scrollHeight          //Para hacer scroll en cuanto se escribe un mensaje
+
+    return $text
 }
 
 let engine = null
@@ -464,6 +466,7 @@ let messages = []
 
 async function askAI(param){
     //console.log(param)
+    
     if(param!=undefined){
         engine = param
         return
@@ -474,6 +477,8 @@ async function askAI(param){
 
     const $button = document.querySelector('button')
     const $input = document.querySelector('input')
+    const $container = document.querySelector('main')
+
     input = $input.value
     $input.value = ""
 
@@ -487,16 +492,37 @@ async function askAI(param){
     }, 2000)*/
     //console.log(engine)
 
-    const reply = await engine.chat.completions.create({
-        messages: [
-            ...messages,
-            {
-                role:'user',
-                content: input
-            }
-        ]
+    const userMessage = {
+        role:'user',
+        content: input
+    }
+
+    //Guardamos el nuevo mensaje en la lista de mensajes
+    messages.push(userMessage)
+
+    const chunks = await engine.chat.completions.create({
+        messages,
+        stream: true
     })
 
-    addMessage('bot', reply.choices[0].message.content)
+    let reply = ""
+
+    const $botMessage = addMessage('bot', "")
+
+    for await (const chunk of chunks){
+        const [choice] = chunk.choices                  //Es como const choice = chunk.choices[0] pero recupero el primer elemento y lo meto en la variable choice
+        const content = choice?.delta?.content ?? ""    //Si content es null o undefined le ponemos la cadena de texto vacio, si es cadena vacia pues la dejamos como esta
+        reply += content
+        $botMessage.textContent = reply
+    }
+    $container.scrollTop = $container.scrollHeight          //Para hacer scroll en cuanto se escribe un mensaje
+
+    //messages.push(reply.choices[0].message)
+    //addMessage('bot', reply.choices[0].message.content)
     $button.removeAttribute('disabled')
+
+    messages.push({
+        role: 'assistant',
+        content: reply
+    })
 }
